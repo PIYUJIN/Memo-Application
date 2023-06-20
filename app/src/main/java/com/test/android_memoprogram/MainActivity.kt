@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-   var recyclerPosition: Int = 0
+    var recyclerPosition: Int = 0
     val c2 = ActivityResultContracts.StartActivityForResult()
     val categoryEditLauncher = registerForActivityResult(c2) {
         when(it.resultCode) {
@@ -62,6 +62,13 @@ class MainActivity : AppCompatActivity() {
         val adpater = activityMainBinding.recyclerViewCategory.adapter as RecyclerAdapter
         adpater.notifyDataSetChanged()
     }
+
+    val c3 = ActivityResultContracts.StartActivityForResult()
+    val memoLauncher = registerForActivityResult(c3) {
+
+    }
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -146,6 +153,7 @@ class MainActivity : AppCompatActivity() {
 
             rowBinding.root.layoutParams = params
 
+
             return ViewHolder
         }
 
@@ -155,6 +163,15 @@ class MainActivity : AppCompatActivity() {
 
         override fun onBindViewHolder(holder: ViewHolderClass, position: Int) {
             holder.textViewCategory.text = categoryList[position]
+
+            holder.itemView.setOnClickListener {
+                val memoIntent = Intent(this@MainActivity,MemoActivity::class.java)
+
+                memoIntent.putExtra("category","${categoryList[position]}")
+
+                memoLauncher.launch(memoIntent)
+            }
+
             Log.d("lion","${categoryList[position]}")
         }
 
