@@ -5,12 +5,16 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.ContextMenu
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.get
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.test.android_memoprogram.databinding.ActivityMainBinding
@@ -41,6 +45,24 @@ class MainActivity : AppCompatActivity() {
         adpater.notifyDataSetChanged()
     }
 
+
+   var recyclerPosition: Int = 0
+    val c2 = ActivityResultContracts.StartActivityForResult()
+    val categoryEditLauncher = registerForActivityResult(c2) {
+        when(it.resultCode) {
+            RESULT_OK -> {
+                var editCategoryName = it.data?.getStringExtra("EditCategoryName")
+                if(editCategoryName!=null)
+                    categoryList[recyclerPosition] = editCategoryName
+                    Log.d("lion","${categoryList[recyclerPosition]}")
+            }
+            RESULT_CANCELED -> {
+            }
+        }
+        val adpater = activityMainBinding.recyclerViewCategory.adapter as RecyclerAdapter
+        adpater.notifyDataSetChanged()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
@@ -52,6 +74,9 @@ class MainActivity : AppCompatActivity() {
                 adapter = RecyclerAdapter()
                 layoutManager = LinearLayoutManager(this@MainActivity)
             }
+
+            // view에 context menu 등록
+            registerForContextMenu(recyclerViewCategory)
         }
 
     }
@@ -82,6 +107,31 @@ class MainActivity : AppCompatActivity() {
 
             init {
                 textViewCategory = rowBinding.textViewCategoryName
+                rowBinding.root.setOnCreateContextMenuListener { menu, v, menuInfo ->
+                    menu?.setHeaderTitle("category 메뉴")
+                    menuInflater.inflate(R.menu.category_menu, menu)
+
+                    menu[0].setOnMenuItemClickListener {
+                        val categoryName = categoryList[adapterPosition]
+
+                        var categoryEditIntent = Intent(this@MainActivity,CategoryEditActivity::class.java)
+                        categoryEditIntent.putExtra("beforeCategoryName","$categoryName")
+                        categoryEditLauncher.launch(categoryEditIntent)
+
+                        recyclerPosition = adapterPosition
+                        Log.d("lion","$recyclerPosition")
+
+                        false
+                    }
+                    menu[1].setOnMenuItemClickListener {
+                        categoryList.removeAt(adapterPosition)
+
+                        val adpater = activityMainBinding.recyclerViewCategory.adapter as RecyclerAdapter
+                        adpater.notifyDataSetChanged()
+
+                        false
+                    }
+                }
             }
         }
 
