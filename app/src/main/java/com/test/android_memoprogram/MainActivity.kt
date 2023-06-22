@@ -17,58 +17,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.get
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.test.android_memoprogram.DataClass.Companion.categoryList
 import com.test.android_memoprogram.databinding.ActivityMainBinding
 import com.test.android_memoprogram.databinding.RowBinding
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var activityMainBinding: ActivityMainBinding
-//    lateinit var categoryLauncher: ActivityResultLauncher<Intent>
-
-    var categoryList = mutableListOf<String>()
-
-    val c1 = ActivityResultContracts.StartActivityForResult()
-    val categoryLauncher = registerForActivityResult(c1) {
-
-        // Result Code로 분기
-        if(it.resultCode == RESULT_OK){
-            val mainCateogryName = it.data?.getStringExtra("categoryName")
-            if(mainCateogryName!=null) {
-                categoryList.add(mainCateogryName)
-                Log.d("lion","${mainCateogryName}")
-            }
-        }
-        else if(it.resultCode == RESULT_CANCELED) {
-        }
-
-        val adpater = activityMainBinding.recyclerViewCategory.adapter as RecyclerAdapter
-        adpater.notifyDataSetChanged()
-    }
-
-
-    var recyclerPosition: Int = 0
-    val c2 = ActivityResultContracts.StartActivityForResult()
-    val categoryEditLauncher = registerForActivityResult(c2) {
-        when(it.resultCode) {
-            RESULT_OK -> {
-                var editCategoryName = it.data?.getStringExtra("EditCategoryName")
-                if(editCategoryName!=null)
-                    categoryList[recyclerPosition] = editCategoryName
-                    Log.d("lion","${categoryList[recyclerPosition]}")
-            }
-            RESULT_CANCELED -> {
-            }
-        }
-        val adpater = activityMainBinding.recyclerViewCategory.adapter as RecyclerAdapter
-        adpater.notifyDataSetChanged()
-    }
-
-    val c3 = ActivityResultContracts.StartActivityForResult()
-    val memoLauncher = registerForActivityResult(c3) {
-
-    }
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,6 +33,7 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.run {
 
             recyclerViewCategory.run {
+                // recyclerView를 나타내기 위한 layoutManager
                 adapter = RecyclerAdapter()
                 layoutManager = LinearLayoutManager(this@MainActivity)
             }
@@ -88,6 +44,14 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        var adapter = activityMainBinding.recyclerViewCategory.adapter as MainActivity.RecyclerAdapter
+        adapter.notifyDataSetChanged()
+    }
+
+    // option menu 생성
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
 
         menuInflater.inflate(R.menu.main_menu,menu)
@@ -95,12 +59,16 @@ class MainActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
+    // option menu 클릭시 동작
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
+        // menu item별로 분기하여 작성
         when(item.itemId) {
-            R.id.addCategoryMenu -> {
-                val categoryIntent = Intent(this@MainActivity, CategoryActivity::class.java)
-                categoryLauncher.launch(categoryIntent)
+            // '추가' menu 클릭한 경우
+            R.id.addCategoryItem -> {
+                // 카테고리 등록 화면으로 전환
+                var categoryRegisterIntent = Intent(this@MainActivity,CategoryActivity::class.java)
+                startActivity(categoryRegisterIntent)
             }
         }
 
@@ -110,42 +78,50 @@ class MainActivity : AppCompatActivity() {
     inner class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolderClass>(){
         inner class ViewHolderClass(rowBinding: RowBinding) : RecyclerView.ViewHolder(rowBinding.root) {
 
-            var textViewCategory : TextView
+            var textViewCategory: TextView
 
             init {
                 textViewCategory = rowBinding.textViewCategoryName
+
+                // context menu 생성
                 rowBinding.root.setOnCreateContextMenuListener { menu, v, menuInfo ->
-                    menu?.setHeaderTitle("category 메뉴")
-                    menuInflater.inflate(R.menu.category_menu, menu)
+                    menuInflater.inflate(R.menu.category_menu,menu)
 
+                    // context menu 클릭시 동작
+
+                    // '카테고리 수정' menu 클릭시 동작
                     menu[0].setOnMenuItemClickListener {
-                        val categoryName = categoryList[adapterPosition]
-
+                        // 카테고리 수정 화면으로 전환
                         var categoryEditIntent = Intent(this@MainActivity,CategoryEditActivity::class.java)
-                        categoryEditIntent.putExtra("beforeCategoryName","$categoryName")
-                        categoryEditLauncher.launch(categoryEditIntent)
-
-                        recyclerPosition = adapterPosition
-                        Log.d("lion","$recyclerPosition")
+                        startActivity(categoryEditIntent)
 
                         false
                     }
+
+                    // '카테고리 삭제' menu 클릭시 동작
                     menu[1].setOnMenuItemClickListener {
+                        // 해당 항목의 카테고리 등록 내역 삭제
+                        // adapterPosition : 해당 항목의 순서(위치)
                         categoryList.removeAt(adapterPosition)
-
-                        val adpater = activityMainBinding.recyclerViewCategory.adapter as RecyclerAdapter
-                        adpater.notifyDataSetChanged()
-
                         false
                     }
+                }
+
+                // recyclerVIew의 1개 항목 클릭시 동작
+                rowBinding.root.setOnClickListener{
+                    var memoIntent = Intent(this@MainActivity,MemoActivity::class.java)
+                    startActivity(memoIntent)
                 }
             }
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderClass {
+            // binding 객체 생성
             val rowBinding = RowBinding.inflate(layoutInflater)
+            // ViewHolder 객체 생성
             val ViewHolder = ViewHolderClass(rowBinding)
 
+            // recyclerView 한 항목의 가로, 세로 크기 설정 b/c 해당 항목의 끝을 클릭해서도 선택 가능하도록 하기 위함이다.
             val params = RecyclerView.LayoutParams(
                 RecyclerView.LayoutParams.MATCH_PARENT,
                 RecyclerView.LayoutParams.WRAP_CONTENT
@@ -162,19 +138,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onBindViewHolder(holder: ViewHolderClass, position: Int) {
+            // recyclerView 항목 : 등록한 카테고리 이름
             holder.textViewCategory.text = categoryList[position]
-
-            holder.itemView.setOnClickListener {
-                val memoIntent = Intent(this@MainActivity,MemoActivity::class.java)
-
-                memoIntent.putExtra("category","${categoryList[position]}")
-
-                memoLauncher.launch(memoIntent)
-            }
-
-            Log.d("lion","${categoryList[position]}")
         }
-
     }
 }
-
