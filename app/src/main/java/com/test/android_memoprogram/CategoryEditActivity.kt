@@ -3,6 +3,8 @@ package com.test.android_memoprogram
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.test.android_memoprogram.DataClass.Companion.categoryList
+import com.test.android_memoprogram.DataClass.Companion.position
 import com.test.android_memoprogram.databinding.ActivityCategoryEditBinding
 
 class CategoryEditActivity : AppCompatActivity() {
@@ -14,22 +16,20 @@ class CategoryEditActivity : AppCompatActivity() {
         setContentView(activityCategoryEditBinding.root)
 
         activityCategoryEditBinding.run {
-            textViewCategory.run {
-                text = intent.getStringExtra("beforeCategoryName")
-            }
+            // 기존 카테고리 이름 보여주기
+            textViewCategory.text = categoryList[DataClass.position]
+
+            // 카테고리 수정 '확인' 버튼 클릭시 동작
             buttoneditCategoryApply.run {
                 setOnClickListener {
-                    val resultInent = Intent()
-                    resultInent.putExtra("EditCategoryName", "${editTextEditCategory.text}")
-
-                    setResult(RESULT_OK, resultInent)
-
+                    var editCategory = editTextEditCategory.text.toString()
+                    categoryList[DataClass.position] = editCategory
                     finish()
                 }
             }
+            // '취소' 버튼 클릭시 동작
             buttonCategoryEditCancel.run {
                 setOnClickListener {
-                    setResult(RESULT_CANCELED)
                     finish()
                 }
             }

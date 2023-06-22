@@ -44,9 +44,11 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    // 화면 전환 후 다시 돌아온 경우
     override fun onResume() {
         super.onResume()
 
+        // recyclerView 갱신
         var adapter = activityMainBinding.recyclerViewCategory.adapter as MainActivity.RecyclerAdapter
         adapter.notifyDataSetChanged()
     }
@@ -93,6 +95,7 @@ class MainActivity : AppCompatActivity() {
                     menu[0].setOnMenuItemClickListener {
                         // 카테고리 수정 화면으로 전환
                         var categoryEditIntent = Intent(this@MainActivity,CategoryEditActivity::class.java)
+                        DataClass.position = adapterPosition
                         startActivity(categoryEditIntent)
 
                         false
@@ -103,6 +106,10 @@ class MainActivity : AppCompatActivity() {
                         // 해당 항목의 카테고리 등록 내역 삭제
                         // adapterPosition : 해당 항목의 순서(위치)
                         categoryList.removeAt(adapterPosition)
+
+                        var adapter = activityMainBinding.recyclerViewCategory.adapter as MainActivity.RecyclerAdapter
+                        adapter.notifyDataSetChanged()
+
                         false
                     }
                 }
@@ -110,6 +117,7 @@ class MainActivity : AppCompatActivity() {
                 // recyclerVIew의 1개 항목 클릭시 동작
                 rowBinding.root.setOnClickListener{
                     var memoIntent = Intent(this@MainActivity,MemoActivity::class.java)
+                    DataClass.position = adapterPosition
                     startActivity(memoIntent)
                 }
             }

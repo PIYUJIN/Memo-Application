@@ -9,6 +9,8 @@ class DataClass {
 
         // category list
         var categoryList = mutableListOf<String>()
+
+        var position = 0
     }
 }
 
