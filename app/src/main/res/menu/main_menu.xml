@@ -2,6 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/addCategoryMenu"
+        android:id="@+id/addCategoryItem"
         android:title="카테고리 추가" />
 </menu>
