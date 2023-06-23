@@ -4,6 +4,10 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import com.test.android_memoprogram.DataClass.Companion.category
+import com.test.android_memoprogram.DataClass.Companion.categoryList
+import com.test.android_memoprogram.DataClass.Companion.categoryPosition
+import com.test.android_memoprogram.DataClass.Companion.memoList
 import com.test.android_memoprogram.databinding.ActivityMemoRegisterBinding
 
 class MemoRegisterActivity : AppCompatActivity() {
@@ -16,23 +20,23 @@ class MemoRegisterActivity : AppCompatActivity() {
         setContentView(activityMemoRegisterBinding.root)
 
         activityMemoRegisterBinding.run {
+            // 메모 '추가' 클릭시 동작
             buttonAddMemo.run {
                 setOnClickListener {
+                    var name = editTextMemoNameRegister.text.toString()
+                    var content = editTextMemoContentRegister.text.toString()
+                    var category = DataClass.category
 
-                    val resultMemoIntent = Intent()
-                    resultMemoIntent.putExtra("memoName","${editTextMemoNameRegister.text}")
-                    resultMemoIntent.putExtra("memoContent","${editTextMemoContentRegister.text}")
+                    memoList.add(MemoInfo(category,name,content))
 
-                    Log.d("lion","${editTextMemoNameRegister.text}")
 
-                    setResult(RESULT_OK,resultMemoIntent)
                     finish()
                 }
             }
 
+            // '취소' 클릭시 동작
             buttonCancelMemoRegister.run {
                 setOnClickListener {
-                    setResult(RESULT_CANCELED)
                     finish()
                 }
             }

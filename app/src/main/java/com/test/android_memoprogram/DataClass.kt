@@ -10,7 +10,12 @@ class DataClass {
         // category list
         var categoryList = mutableListOf<String>()
 
-        var position = 0
+        // 선택된 카테고리의 memo list
+        var categoryMemoList = mutableListOf<MemoInfo>()
+
+        var categoryPosition = 0
+        var memoPosition = 0
+        var category = ""
     }
 }
 

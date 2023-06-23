@@ -17,6 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.get
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.test.android_memoprogram.DataClass.Companion.category
 import com.test.android_memoprogram.DataClass.Companion.categoryList
 import com.test.android_memoprogram.databinding.ActivityMainBinding
 import com.test.android_memoprogram.databinding.RowBinding
@@ -77,6 +78,7 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    // category list recyclerView 설정
     inner class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolderClass>(){
         inner class ViewHolderClass(rowBinding: RowBinding) : RecyclerView.ViewHolder(rowBinding.root) {
 
@@ -95,7 +97,7 @@ class MainActivity : AppCompatActivity() {
                     menu[0].setOnMenuItemClickListener {
                         // 카테고리 수정 화면으로 전환
                         var categoryEditIntent = Intent(this@MainActivity,CategoryEditActivity::class.java)
-                        DataClass.position = adapterPosition
+                        DataClass.categoryPosition = adapterPosition
                         startActivity(categoryEditIntent)
 
                         false
@@ -117,7 +119,8 @@ class MainActivity : AppCompatActivity() {
                 // recyclerVIew의 1개 항목 클릭시 동작
                 rowBinding.root.setOnClickListener{
                     var memoIntent = Intent(this@MainActivity,MemoActivity::class.java)
-                    DataClass.position = adapterPosition
+                    category = categoryList[adapterPosition]
+                    Log.d("lion","main category : $category")
                     startActivity(memoIntent)
                 }
             }
