@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.test.android_memoprogram.DataClass.Companion.category
 import com.test.android_memoprogram.DataClass.Companion.categoryList
 import com.test.android_memoprogram.DataClass.Companion.categoryMemoList
-import com.test.android_memoprogram.DataClass.Companion.categoryPosition
 import com.test.android_memoprogram.DataClass.Companion.memoList
 import com.test.android_memoprogram.DataClass.Companion.memoPosition
 import com.test.android_memoprogram.databinding.ActivityMemoBinding
@@ -105,6 +104,7 @@ class MemoActivity : AppCompatActivity() {
                         var memoEditIntent = Intent(this@MemoActivity,MemoEditActivity::class.java)
                         // 선택한 메모의 position 전달
                         DataClass.memoPosition = adapterPosition
+                        memoEditIntent.putExtra("memoListPosition",memoPositionList[adapterPosition])
                         startActivity(memoEditIntent)
                         false
                     }
