@@ -48,6 +48,7 @@ class MemoActivity : AppCompatActivity() {
         super.onResume()
 
         categoryMemoList.clear()
+        memoPositionList.clear()
 
         for(i in 0 until memoList.size) {
 
@@ -58,7 +59,7 @@ class MemoActivity : AppCompatActivity() {
         }
 
         for(i in 0 until memoPositionList.size) {
-            Log.d("lion","memoList position : ${memoPositionList[i]}")
+            Log.d("lion","memoList position$i : ${memoPositionList[i]}")
         }
 
         val adapter = activityMemoBinding.recyclerViewMemo.adapter as MemoActivity.RecyclerAdapter
@@ -111,12 +112,15 @@ class MemoActivity : AppCompatActivity() {
                     // '메모 삭제' 클릭시 동작
                     menu[1].setOnMenuItemClickListener {
                         // 해당 메모 삭제
-                        categoryMemoList.removeAt(adapterPosition)
 
-                        var memoListPosition = memoPositionList[adapterPosition+1]
+                        var memoListPosition = memoPositionList[adapterPosition]
+                        Log.d("lion","adapterPosition : $adapterPosition")
                         Log.d("lion","삭제되는 position : ${memoListPosition}")
+                        Log.d("lion","삭제되는 memo : ${memoList[memoListPosition].name}")
 
                         memoList.removeAt(memoListPosition)
+
+                        categoryMemoList.removeAt(adapterPosition)
 
                         // recyclerView 갱신
                         val adapter = activityMemoBinding.recyclerViewMemo.adapter as MemoActivity.RecyclerAdapter
